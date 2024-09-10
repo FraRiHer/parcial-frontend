@@ -31,7 +31,7 @@ function App() {
     e.preventDefault();
 
     // Enviar datos al backend Flask usando axios
-    axios.post('http://ip_maquina_flask:5000/register', formData)
+    axios.post('http://ec2-54-173-147-194.compute-1.amazonaws.com:5000/register', formData)
       .then(response => {
         console.log('Usuario registrado:', response.data);
 
@@ -56,7 +56,7 @@ function App() {
 
   // Función para obtener los usuarios registrados desde el backend
   const fetchUsers = () => {
-    axios.get('http://ip_maquina_flask:5000/users')
+    axios.get('http://ec2-54-173-147-194.compute-1.amazonaws.com:5000/users')
       .then(response => {
         setUsers(response.data);
         setShowRegister(false);
