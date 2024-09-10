@@ -1,6 +1,6 @@
-// src/App.js
 import React, { useState } from 'react';
 import './App.css';
+import axios from 'axios';
 
 function App() {
   // Estado para los campos del formulario
@@ -29,8 +29,21 @@ function App() {
   // Manejo del envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí deberías realizar la lógica de envío al backend
-    setUsers([...users, formData]);
+
+    // Enviar datos al backend Flask usando axios
+    axios.post('http://ip_maquina_flask:5000/register', formData)
+      .then(response => {
+        console.log('Usuario registrado:', response.data);
+
+        // Agregar el usuario registrado a la lista de usuarios
+        setUsers([...users, formData]);
+
+        // Cambiar a la pantalla de lista de usuarios después de registrar
+        setShowRegister(false);
+      })
+      .catch(error => {
+        console.error('Error al registrar el usuario:', error);
+      });
 
     // Limpiar el formulario después del registro
     setFormData({
@@ -39,9 +52,18 @@ function App() {
       birthDate: '',
       password: '',
     });
+  };
 
-    // Cambiar a la pantalla de lista de usuarios después de registrar
-    setShowRegister(false);
+  // Función para obtener los usuarios registrados desde el backend
+  const fetchUsers = () => {
+    axios.get('http://ip_maquina_flask:5000/users')
+      .then(response => {
+        setUsers(response.data);
+        setShowRegister(false);
+      })
+      .catch(error => {
+        console.error('Error al obtener usuarios:', error);
+      });
   };
 
   return (
@@ -49,7 +71,7 @@ function App() {
       <h1>Aplicación de Registro de Usuarios</h1>
       <div>
         <button onClick={() => setShowRegister(true)}>Registrar Usuario</button>
-        <button onClick={() => setShowRegister(false)}>Ver Usuarios Registrados</button>
+        <button onClick={fetchUsers}>Ver Usuarios Registrados</button>
       </div>
 
       {showRegister ? (
@@ -108,7 +130,7 @@ function App() {
             <ul>
               {users.map((user, index) => (
                 <li key={index}>
-                  {user.firstName} {user.lastName}, Nacimiento: {user.birthDate}
+                  {user.first_name} {user.last_name}, Nacimiento: {user.birth_date}
                 </li>
               ))}
             </ul>
