@@ -68,7 +68,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Aplicación de Registro de Usuarios</h1>
+      <h1>Aplicación de Registro de nuevo Usuarios</h1>
       <div>
         <button onClick={() => setShowRegister(true)}>Registrar Usuario</button>
         <button onClick={fetchUsers}>Ver Usuarios Registrados</button>
