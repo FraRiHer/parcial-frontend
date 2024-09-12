@@ -38,7 +38,7 @@ jobs:
             
             # Acceder al directorio del proyecto
             cd parcial-frontend &&
-            cd react-app &&
+            cd app-react &&
 
             # Sincronizar los últimos cambios del repositorio
             git fetch --all &&
