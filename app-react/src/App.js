@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import './App.css';
 
+const axios = require('axios');
 
 function App() {
   // Estado para los campos del formulario
