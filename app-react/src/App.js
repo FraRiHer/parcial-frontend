@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
 
-const axios = require('axios');
-
 function App() {
   // Estado para los campos del formulario
   const [formData, setFormData] = useState({
@@ -28,48 +26,53 @@ function App() {
   };
 
   // Manejo del envío del formulario
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Enviar datos al backend Flask usando axios
-    axios.post('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/register', formData)
-      .then(response => {
-        console.log('Usuario registrado:', response.data);
-
-        // Agregar el usuario registrado a la lista de usuarios
-        setUsers([...users, formData]);
-
-        // Cambiar a la pantalla de lista de usuarios después de registrar
-        setShowRegister(false);
-      })
-      .catch(error => {
-        console.error('Error al registrar el usuario:', error);
+    try {
+      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
+      const data = await response.json();
+      console.log('Usuario registrado:', data);
 
-    // Limpiar el formulario después del registro
-    setFormData({
-      firstName: '',
-      lastName: '',
-      birthDate: '',
-      password: '',
-    });
+      // Agregar el usuario registrado a la lista de usuarios
+      setUsers([...users, formData]);
+
+      // Cambiar a la pantalla de lista de usuarios después de registrar
+      setShowRegister(false);
+
+      // Limpiar el formulario después del registro
+      setFormData({
+        firstName: '',
+        lastName: '',
+        birthDate: '',
+        password: '',
+      });
+    } catch (error) {
+      console.error('Error al registrar el usuario:', error);
+    }
   };
 
   // Función para obtener los usuarios registrados desde el backend
-  const fetchUsers = () => {
-    axios.get('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/users')
-      .then(response => {
-        setUsers(response.data);
-        setShowRegister(false);
-      })
-      .catch(error => {
-        console.error('Error al obtener usuarios:', error);
-      });
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/users');
+      const data = await response.json();
+      setUsers(data);
+      setShowRegister(false);
+    } catch (error) {
+      console.error('Error al obtener usuarios:', error);
+    }
   };
 
   return (
     <div className="App">
-      <h1>Aplicación de Registro de nuevo  Usuarios</h1>
+      <h1>Aplicación de Registro de nuevos Usuarios</h1>
       <div>
         <button onClick={() => setShowRegister(true)}>Registrar Usuario</button>
         <button onClick={fetchUsers}>Ver Usuarios Registrados</button>
