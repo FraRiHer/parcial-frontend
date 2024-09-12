@@ -3,34 +3,49 @@
 
 name: Node.js Package
 
+
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main  # Rama en la que quieres que se ejecute el despliegue
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm test
 
-  publish-gpr:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://npm.pkg.github.com/
-      - run: npm ci
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16.x'  # O la versión de Node.js que estés usando
+
+    - name: Copy project to EC2 and restart server
+      env:
+        EC2_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        SERVER_IP: ${{ secrets.FRONTEND_SSH_HOST }}
+        EC2_USER: ${{ secrets.FRONTEND_USER_NAME }}
+        APP_DIR: /home/ubuntu/parcial-frontend  # Cambia a la ubicación del proyecto en la instancia EC2
+      run: |
+        echo "$EC2_PRIVATE_KEY" | tr -d '\r' > ec2_key
+        chmod 600 ec2_key
+        ssh -o StrictHostKeyChecking=no -i ec2_key ${EC2_USER}@${SERVER_IP} '
+        
+            sudo apt install apache2
+            npm install
+            
+            # Acceder al directorio del proyecto
+            cd parcial-frontend &&
+            cd react-app &&
+
+            # Sincronizar los últimos cambios del repositorio
+            git fetch --all &&
+            git reset --hard origin/main &&
+            git pull origin main &&
+            
+            npm run build
+            sudo cp -r build/* /var/www/html/
+            sudo systemctl restart apache2
+        '
