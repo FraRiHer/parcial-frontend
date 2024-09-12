@@ -1,10 +1,10 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders registration form', () => {
+test('renders register user form', () => {
   render(<App />);
-  const registerButton = screen.getByText(/Registrar Usuario/i);
-  expect(registerButton).toBeInTheDocument();
+  const linkElement = screen.getByText(/Registro de Usuarios/i);
+  expect(linkElement).toBeInTheDocument();
 });
 
 test('submits the form and adds a user', async () => {
