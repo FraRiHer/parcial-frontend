@@ -17,10 +17,16 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '16.x'
+    - name: Print directory structure
+      run: |
+        ls -R
+    
     - name: Install dependencies
       run: |
-        cd parcial-frontend/app-react  # Cambia a la carpeta donde está package.json
+        cd ./app-react  # Cambia a la carpeta donde está package.json, directamente desde el directorio raíz
         npm install
+
+        
     - name: Build application
       run: |
         cd parcial-frontend/app-react  # Cambia a la carpeta correcta
