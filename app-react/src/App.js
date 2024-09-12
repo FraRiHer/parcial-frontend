@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import axios from 'axios';
+jest.mock('axios');
 
 function App() {
   // Estado para los campos del formulario
