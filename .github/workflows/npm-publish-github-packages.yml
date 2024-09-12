@@ -33,7 +33,9 @@ jobs:
         npm run build
 
     - name: Run tests
-      run: npm test
+      run: |
+        cd ./app-react
+        npm test
   
   deploy:
     needs: test
