@@ -83,8 +83,9 @@ function App() {
           <h2>Registro de Usuarios</h2>
           <form onSubmit={handleSubmit}>
             <div>
-              <label>Nombres:</label>
+              <label htmlFor="firstName">Nombres:</label>
               <input
+                id="firstName"
                 type="text"
                 name="firstName"
                 value={formData.firstName}
@@ -93,8 +94,9 @@ function App() {
               />
             </div>
             <div>
-              <label>Apellidos:</label>
+              <label htmlFor="lastName">Apellidos:</label>
               <input
+                id="lastName"
                 type="text"
                 name="lastName"
                 value={formData.lastName}
@@ -103,8 +105,9 @@ function App() {
               />
             </div>
             <div>
-              <label>Fecha de nacimiento:</label>
+              <label htmlFor="birthDate">Fecha de nacimiento:</label>
               <input
+                id="birthDate"
                 type="date"
                 name="birthDate"
                 value={formData.birthDate}
@@ -113,8 +116,9 @@ function App() {
               />
             </div>
             <div>
-              <label>Password:</label>
+              <label htmlFor="password">Password:</label>
               <input
+                id="password"
                 type="password"
                 name="password"
                 value={formData.password}
