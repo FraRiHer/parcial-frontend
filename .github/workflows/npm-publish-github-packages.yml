@@ -17,9 +17,14 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '16.x'
-
     - name: Install dependencies
-      run: npm install
+      run: |
+        cd parcial-frontend/app-react  # Cambia a la carpeta donde está package.json
+        npm install
+    - name: Build application
+      run: |
+        cd parcial-frontend/app-react  # Cambia a la carpeta correcta
+        npm run build
 
     - name: Run tests
       run: npm test
