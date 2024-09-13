@@ -25,7 +25,7 @@ function App() {
     });
   };
 
-  // Manejo del envío del formulario
+    // Manejo del envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -41,13 +41,16 @@ function App() {
       console.log('Usuario registrado:', data);
 
       // Agregar el usuario registrado a la lista de usuarios
-      setUsers([...users, data]);
+      setUsers([...users, data]); // Cambiado para que se añada el usuario retornado del servidor
 
-      // Limpiar el formulario después del registro, pero no cambiar la pantalla
+      // Cambiar a la pantalla de lista de usuarios después de registrar
+      setShowRegister(false);
+
+      // Limpiar el formulario después del registro
       setFormData({
-        first_name: '',
-        last_name: '',
-        birth_date: '',
+        firstName: '',
+        lastName: '',
+        birthDate: '',
         password: '',
       });
     } catch (error) {
