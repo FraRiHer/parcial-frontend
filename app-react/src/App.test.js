@@ -8,16 +8,16 @@ beforeEach(() => {
     if (url.includes('/register')) {
       return Promise.resolve({
         json: () => Promise.resolve({
-          firstName: 'John',
-          lastName: 'Doe',
-          birthDate: '2000-01-01'
+          first_name: 'John',
+          last_name: 'Doe',
+          birth_date: '2000-01-01'
         }),
       });
     // Mock de la llamada a /users para devolver la lista de usuarios
     } else if (url.includes('/users')) {
       return Promise.resolve({
         json: () => Promise.resolve([
-          { firstName: 'John', lastName: 'Doe', birthDate: '2000-01-01' }
+          { first_name: 'John', last_name: 'Doe', birth_date: '2000-01-01' }
         ]),
       });
     }
