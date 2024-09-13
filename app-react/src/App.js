@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
+  // Estado para los campos del formulario
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -9,9 +10,13 @@ function App() {
     password: '',
   });
 
+  // Estado para almacenar los usuarios registrados
   const [users, setUsers] = useState([]);
-  const [showRegister, setShowRegister] = useState(true);
 
+  // Estado para manejar cuál pantalla mostrar
+  const [showRegister, setShowRegister] = useState(true); // true muestra el formulario, false muestra la lista de usuarios
+
+  // Manejo de cambios en los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -20,8 +25,15 @@ function App() {
     });
   };
 
+  // Manejo del envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validación extra para asegurarnos de que todos los campos estén llenos
+    if (!formData.firstName || !formData.lastName || !formData.birthDate || !formData.password) {
+      console.error('Todos los campos son requeridos');
+      return;
+    }
 
     try {
       const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/register', {
@@ -29,7 +41,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData),  // Enviar los datos con los nombres corregidos
       });
       const data = await response.json();
       console.log('Usuario registrado:', data);
@@ -57,6 +69,7 @@ function App() {
     }
   };
 
+  // Función para obtener los usuarios registrados desde el backend
   const fetchUsers = async () => {
     try {
       const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/users');
