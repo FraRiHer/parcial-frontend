@@ -61,17 +61,18 @@ jobs:
         echo "$EC2_PRIVATE_KEY" | tr -d '\r' > ec2_key
         chmod 600 ec2_key
         ssh -o StrictHostKeyChecking=no -i ec2_key ${EC2_USER}@${SERVER_IP} '
+        
           sudo apt install apache2
-          cd ${APP_DIR} &&
+          npm install
+
+          cd parcial-frontend &&
+          cd app-react && 
+
           git fetch --all &&
           git reset --hard origin/main &&
           git pull origin main &&
-          npm install &&
-          npm run build &&
+          
+          npm run build 
           sudo cp -r build/* /var/www/html/ &&
           sudo systemctl restart apache2
         '
-
-    - name: Verify deployment
-      run: |
-        curl -f http://${SERVER_IP} || exit 1
