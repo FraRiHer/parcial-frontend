@@ -63,10 +63,10 @@ jobs:
         ssh -o StrictHostKeyChecking=no -i ec2_key ${EC2_USER}@${SERVER_IP} '
           sudo apt install apache2
           cd ${APP_DIR} &&
+          cd app-react &&
           git fetch --all &&
           git reset --hard origin/main &&
           git pull origin main &&
-          cd app-react &&
           npm install &&
           npm run build &&
           sudo cp -r build/* /var/www/html/ &&
