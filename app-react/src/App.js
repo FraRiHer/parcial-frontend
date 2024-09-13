@@ -111,7 +111,6 @@ function App() {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                required
               />
             </div>
             <div>
