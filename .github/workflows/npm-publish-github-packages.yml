@@ -72,3 +72,7 @@ jobs:
           sudo cp -r build/* /var/www/html/ &&
           sudo systemctl restart apache2
         '
+
+    - name: Verify deployment
+      run: |
+        curl -f http://${SERVER_IP} || exit 1
