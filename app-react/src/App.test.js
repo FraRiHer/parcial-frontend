@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from './App';
 
 test('submits the form and adds a user', async () => {
@@ -8,7 +8,12 @@ test('submits the form and adds a user', async () => {
   const lastNameInput = screen.getByLabelText(/Apellidos:/i);
   const birthDateInput = screen.getByLabelText(/Fecha de nacimiento:/i);
   const passwordInput = screen.getByLabelText(/Password:/i);
-  const submitButton = screen.getByRole('button', { name: /Registrar/i });
+
+  // Obtiene todos los botones que coinciden con el texto "Registrar"
+  const buttons = screen.getAllByRole('button', { name: /Registrar/i });
+  
+  // El botón de registro en el formulario es el segundo, por lo que seleccionamos el índice 1
+  const submitButton = buttons[1];
 
   fireEvent.change(firstNameInput, { target: { value: 'John' } });
   fireEvent.change(lastNameInput, { target: { value: 'Doe' } });
@@ -17,5 +22,8 @@ test('submits the form and adds a user', async () => {
 
   fireEvent.click(submitButton);
 
-  // Puedes agregar aquí expectativas para verificar si el formulario se envió correctamente
+  // Esperar hasta que el usuario aparezca en la lista
+  await waitFor(() => {
+    expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
+  });
 });
