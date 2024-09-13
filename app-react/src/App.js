@@ -41,7 +41,7 @@ function App() {
       console.log('Usuario registrado:', data);
 
       // Agregar el usuario registrado a la lista de usuarios
-      setUsers([...users, formData]);
+      setUsers([...users, data]); // Cambiado para que se añada el usuario retornado del servidor
 
       // Cambiar a la pantalla de lista de usuarios después de registrar
       setShowRegister(false);
@@ -138,7 +138,7 @@ function App() {
             <ul>
               {users.map((user, index) => (
                 <li key={index}>
-                  {user.first_name} {user.last_name}, Nacimiento: {user.birth_date}
+                  {user.firstName} {user.lastName}, Nacimiento: {user.birthDate} {/* Cambiado para que coincidan con las claves correctas */}
                 </li>
               ))}
             </ul>
