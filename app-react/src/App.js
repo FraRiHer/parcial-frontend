@@ -63,6 +63,10 @@ function App() {
     try {
       const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/users');
       const data = await response.json();
+  
+      // Agregar el console.log para ver los datos que trae el backend
+      console.log('Datos recibidos del backend:', data);
+  
       setUsers(data);
       setShowRegister(false);
     } catch (error) {
