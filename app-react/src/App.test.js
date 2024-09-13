@@ -4,7 +4,6 @@ import App from './App';
 // Simular la respuesta de fetch para evitar la conexión real
 beforeEach(() => {
   global.fetch = jest.fn((url) => {
-    // Mock de la llamada a /register para devolver los detalles del usuario registrado
     if (url.includes('/register')) {
       return Promise.resolve({
         json: () => Promise.resolve({
@@ -13,7 +12,6 @@ beforeEach(() => {
           birth_date: '2000-01-01'
         }),
       });
-    // Mock de la llamada a /users para devolver la lista de usuarios
     } else if (url.includes('/users')) {
       return Promise.resolve({
         json: () => Promise.resolve([
@@ -27,6 +25,10 @@ beforeEach(() => {
 
 test('submits the form and adds a user', async () => {
   render(<App />);
+
+  // Asegúrate de que estás en la pantalla de registro
+  const registerButton = screen.getByRole('button', { name: /Registrar Usuario/i });
+  fireEvent.click(registerButton);
 
   const firstNameInput = screen.getByLabelText(/Nombres:/i);
   const lastNameInput = screen.getByLabelText(/Apellidos:/i);
@@ -56,12 +58,16 @@ test('submits the form and adds a user', async () => {
 test('does not submit the form if required fields are empty', async () => {
   render(<App />);
 
+  // Asegúrate de que estás en la pantalla de registro
+  const registerButton = screen.getByRole('button', { name: /Registrar Usuario/i });
+  fireEvent.click(registerButton);
+
   const submitButton = screen.getByRole('button', { name: /Registrar/i });
 
   // Intentar enviar el formulario sin llenar los campos
   fireEvent.click(submitButton);
 
-  // Asegúrate de que el usuario no se haya añadido a la lista
+  // Asegúrate de que no hay usuarios en la lista
   const viewUsersButton = screen.getByRole('button', { name: /Ver Usuarios Registrados/i });
   fireEvent.click(viewUsersButton);
 
