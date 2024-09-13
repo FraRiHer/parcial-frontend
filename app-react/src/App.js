@@ -2,21 +2,16 @@ import React, { useState } from 'react';
 import './App.css';
 
 function App() {
-  // Estado para los campos del formulario
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    birth_date: '',
+    firstName: '',
+    lastName: '',
+    birthDate: '',
     password: '',
   });
 
-  // Estado para almacenar los usuarios registrados
   const [users, setUsers] = useState([]);
+  const [showRegister, setShowRegister] = useState(true);
 
-  // Estado para manejar cuál pantalla mostrar
-  const [showRegister, setShowRegister] = useState(true); // true muestra el formulario, false muestra la lista de usuarios
-
-  // Manejo de cambios en los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -25,7 +20,6 @@ function App() {
     });
   };
 
-  // Manejo del envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -40,22 +34,19 @@ function App() {
       const data = await response.json();
       console.log('Usuario registrado:', data);
 
-      // Cambia la estructura esperada al recibir el usuario registrado
       if (response.ok) {
         setUsers([...users, {
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          birth_date: formData.birth_date
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          birthDate: formData.birthDate
         }]);
 
-        // Cambiar a la pantalla de lista de usuarios después de registrar
         setShowRegister(false);
 
-        // Limpiar el formulario después del registro
         setFormData({
-          first_name: '',
-          last_name: '',
-          birth_date: '',
+          firstName: '',
+          lastName: '',
+          birthDate: '',
           password: '',
         });
       } else {
@@ -66,16 +57,21 @@ function App() {
     }
   };
 
-  // Función para obtener los usuarios registrados desde el backend
   const fetchUsers = async () => {
     try {
       const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/users');
       const data = await response.json();
 
-      // Agregar el console.log para ver los datos que trae el backend
       console.log('Datos recibidos del backend:', data);
 
-      setUsers(data);
+      // Limpiar nombres y manejar el formato de fecha
+      const cleanedUsers = data.map(user => ({
+        firstName: user.first_name.trim(),
+        lastName: user.last_name.trim(),
+        birthDate: new Date(user.birth_date).toLocaleDateString(), // Formatear la fecha
+      }));
+
+      setUsers(cleanedUsers);
       setShowRegister(false);
     } catch (error) {
       console.error('Error al obtener usuarios:', error);
@@ -99,8 +95,8 @@ function App() {
               <input
                 id="first_name"
                 type="text"
-                name="first_name"
-                value={formData.first_name}
+                name="firstName"
+                value={formData.firstName}
                 onChange={handleChange}
                 required
               />
@@ -110,8 +106,8 @@ function App() {
               <input
                 id="last_name"
                 type="text"
-                name="last_name"
-                value={formData.last_name}
+                name="lastName"
+                value={formData.lastName}
                 onChange={handleChange}
                 required
               />
@@ -121,8 +117,8 @@ function App() {
               <input
                 id="birth_date"
                 type="date"
-                name="birth_date"
-                value={formData.birth_date}
+                name="birthDate"
+                value={formData.birthDate}
                 onChange={handleChange}
                 required
               />
@@ -150,8 +146,8 @@ function App() {
             <ul>
               {users.map((user, index) => (
                 <li key={index}>
-                  {user.first_name ? user.first_name : 'Nombre no disponible'} {user.last_name ? user.last_name : 'Apellido no disponible'}, 
-                  Nacimiento: {user.birth_date ? new Date(user.birth_date).toLocaleDateString() : 'Fecha no disponible'}
+                  {user.firstName} {user.lastName}, 
+                  Nacimiento: {user.birthDate}
                 </li>
               ))}
             </ul>
