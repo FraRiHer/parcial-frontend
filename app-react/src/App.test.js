@@ -10,7 +10,9 @@ beforeEach(() => {
       });
     } else if (url.includes('/users')) {
       return Promise.resolve({
-        json: () => Promise.resolve([{ firstName: 'John', lastName: 'Doe', birthDate: '2000-01-01' }]),
+        json: () => Promise.resolve([
+          { firstName: 'John', lastName: 'Doe', birthDate: '2000-01-01' }
+        ]),
       });
     }
     return Promise.reject(new Error('URL no manejada'));
@@ -34,6 +36,10 @@ test('submits the form and adds a user', async () => {
   fireEvent.change(passwordInput, { target: { value: 'password123' } });
 
   fireEvent.click(submitButton);
+
+  // Simular la carga de los usuarios
+  const viewUsersButton = screen.getByRole('button', { name: /Ver Usuarios Registrados/i });
+  fireEvent.click(viewUsersButton);
 
   // Esperar hasta que el usuario aparezca en la lista simulada
   await waitFor(() => {
