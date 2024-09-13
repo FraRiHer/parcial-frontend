@@ -40,19 +40,27 @@ function App() {
       const data = await response.json();
       console.log('Usuario registrado:', data);
 
-      // Agregar el usuario registrado a la lista de usuarios
-      setUsers([...users, data]); // Cambiado para que se añada el usuario retornado del servidor
+      // Cambia la estructura esperada al recibir el usuario registrado
+      if (response.ok) {
+        setUsers([...users, {
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          birth_date: formData.birth_date
+        }]);
 
-      // Cambiar a la pantalla de lista de usuarios después de registrar
-      setShowRegister(false);
+        // Cambiar a la pantalla de lista de usuarios después de registrar
+        setShowRegister(false);
 
-      // Limpiar el formulario después del registro
-      setFormData({
-        firstName: '',
-        lastName: '',
-        birthDate: '',
-        password: '',
-      });
+        // Limpiar el formulario después del registro
+        setFormData({
+          first_name: '',
+          last_name: '',
+          birth_date: '',
+          password: '',
+        });
+      } else {
+        console.error('Error al registrar el usuario:', data.message);
+      }
     } catch (error) {
       console.error('Error al registrar el usuario:', error);
     }
