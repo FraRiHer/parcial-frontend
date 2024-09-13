@@ -17,26 +17,17 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '16.x'
-    - name: Print directory structure
-      run: |
-        ls -R
-    
+
     - name: Install dependencies
       run: |
-        cd ./app-react  # Cambia a la carpeta donde está package.json, directamente desde el directorio raíz
+        cd ./app-react
         npm install
-
         
-    - name: Build application
-      run: |
-        cd ./app-react  # Cambia a la carpeta correcta
-        npm run build
-
     - name: Run tests
       run: |
         cd ./app-react
         npm test
-  
+
   deploy:
     needs: test
     runs-on: ubuntu-latest
@@ -50,7 +41,17 @@ jobs:
       with:
         node-version: '16.x'
 
-    - name: Copy project to EC2 and restart server
+    - name: Install dependencies
+      run: |
+        cd ./app-react
+        npm install
+
+    - name: Build application
+      run: |
+        cd ./app-react
+        npm run build
+
+    - name: Deploy to EC2
       env:
         EC2_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         SERVER_IP: ${{ secrets.FRONTEND_SSH_HOST }}
@@ -60,18 +61,14 @@ jobs:
         echo "$EC2_PRIVATE_KEY" | tr -d '\r' > ec2_key
         chmod 600 ec2_key
         ssh -o StrictHostKeyChecking=no -i ec2_key ${EC2_USER}@${SERVER_IP} '
-        
-            sudo apt install apache2
-            npm install
-            
-            cd parcial-frontend &&
-            cd app-react &&
-
-            git fetch --all &&
-            git reset --hard origin/main &&
-            git pull origin main &&
-            
-            npm run build
-            sudo cp -r build/* /var/www/html/
-            sudo systemctl restart apache2
+          sudo apt install apache2
+          cd ${APP_DIR} &&
+          git fetch --all &&
+          git reset --hard origin/main &&
+          git pull origin main &&
+          cd app-react &&
+          npm install &&
+          npm run build &&
+          sudo cp -r build/* /var/www/html/ &&
+          sudo systemctl restart apache2
         '
