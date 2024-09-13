@@ -4,9 +4,9 @@ import './App.css';
 function App() {
   // Estado para los campos del formulario
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    birthDate: '',
+    first_name: '',
+    last_name: '',
+    birth_date: '',
     password: '',
   });
 
@@ -41,16 +41,13 @@ function App() {
       console.log('Usuario registrado:', data);
 
       // Agregar el usuario registrado a la lista de usuarios
-      setUsers([...users, data]); // Cambiado para que se añada el usuario retornado del servidor
+      setUsers([...users, data]);
 
-      // Cambiar a la pantalla de lista de usuarios después de registrar
-      setShowRegister(false);
-
-      // Limpiar el formulario después del registro
+      // Limpiar el formulario después del registro, pero no cambiar la pantalla
       setFormData({
-        firstName: '',
-        lastName: '',
-        birthDate: '',
+        first_name: '',
+        last_name: '',
+        birth_date: '',
         password: '',
       });
     } catch (error) {
@@ -63,10 +60,10 @@ function App() {
     try {
       const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/users');
       const data = await response.json();
-  
+
       // Agregar el console.log para ver los datos que trae el backend
       console.log('Datos recibidos del backend:', data);
-  
+
       setUsers(data);
       setShowRegister(false);
     } catch (error) {
@@ -87,34 +84,34 @@ function App() {
           <h2>Registro de Usuarios</h2>
           <form onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="firstName">Nombres:</label>
+              <label htmlFor="first_name">Nombres:</label>
               <input
-                id="firstName"
+                id="first_name"
                 type="text"
-                name="firstName"
-                value={formData.firstName}
+                name="first_name"
+                value={formData.first_name}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <label htmlFor="lastName">Apellidos:</label>
+              <label htmlFor="last_name">Apellidos:</label>
               <input
-                id="lastName"
+                id="last_name"
                 type="text"
-                name="lastName"
-                value={formData.lastName}
+                name="last_name"
+                value={formData.last_name}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <label htmlFor="birthDate">Fecha de nacimiento:</label>
+              <label htmlFor="birth_date">Fecha de nacimiento:</label>
               <input
-                id="birthDate"
+                id="birth_date"
                 type="date"
-                name="birthDate"
-                value={formData.birthDate}
+                name="birth_date"
+                value={formData.birth_date}
                 onChange={handleChange}
                 required
               />
@@ -143,7 +140,7 @@ function App() {
               {users.map((user, index) => (
                 <li key={index}>
                   {user.first_name ? user.first_name : 'Nombre no disponible'} {user.last_name ? user.last_name : 'Apellido no disponible'}, 
-                  Nacimiento: {user.birth_date ? user.birth_date : 'Fecha no disponible'}
+                  Nacimiento: {user.birth_date ? new Date(user.birth_date).toLocaleDateString() : 'Fecha no disponible'}
                 </li>
               ))}
             </ul>
