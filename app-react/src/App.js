@@ -142,8 +142,8 @@ function App() {
             <ul>
               {users.map((user, index) => (
                 <li key={index}>
-                  {user.firstName ? user.firstName : 'Nombre no disponible'} {user.lastName ? user.lastName : 'Apellido no disponible'}, 
-                  Nacimiento: {user.birthDate ? user.birthDate : 'Fecha no disponible'}
+                  {user.first_name ? user.first_name : 'Nombre no disponible'} {user.last_name ? user.last_name : 'Apellido no disponible'}, 
+                  Nacimiento: {user.birth_date ? user.birth_date : 'Fecha no disponible'}
                 </li>
               ))}
             </ul>
