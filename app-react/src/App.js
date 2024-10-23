@@ -1,20 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  // Estado para los campos del formulario
+  // Estado para los campos del formulario de rentas
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    birthDate: '',
-    password: '',
+    rentalDate: '',
+    customerId: '',
+    movieId: '',
   });
 
-  // Estado para almacenar los usuarios registrados
-  const [users, setUsers] = useState([]);
+  // Estado para almacenar las películas desde el backend
+  const [movies, setMovies] = useState([]);
 
-  // Estado para manejar cuál pantalla mostrar
-  const [showRegister, setShowRegister] = useState(true); // true muestra el formulario, false muestra la lista de usuarios
+  // Estado para manejar las rentas registradas
+  const [rentals, setRentals] = useState([]);
+
+  // Estado para manejar cuál pantalla mostrar (true: formulario de rentas, false: lista de rentas)
+  const [showRentalForm, setShowRentalForm] = useState(true);
 
   // Manejo de cambios en los inputs
   const handleChange = (e) => {
@@ -25,141 +27,144 @@ function App() {
     });
   };
 
-  // Manejo del envío del formulario
+  // Obtener las películas del backend para mostrar en el desplegable
+  const fetchMovies = async () => {
+    try {
+      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/movies');
+      const data = await response.json();
+      setMovies(data);
+    } catch (error) {
+      console.error('Error al obtener las películas:', error);
+    }
+  };
+
+  // Cargar las películas cuando se monta el componente
+  useEffect(() => {
+    fetchMovies();
+  }, []);
+
+  // Manejo del envío del formulario de rentas
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validación extra para asegurarnos de que todos los campos estén llenos
-    if (!formData.firstName || !formData.lastName || !formData.birthDate || !formData.password) {
+    // Validación para asegurarnos de que todos los campos estén llenos
+    if (!formData.rentalDate || !formData.customerId || !formData.movieId) {
       console.error('Todos los campos son requeridos');
       return;
     }
 
     try {
-      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/register', {
+      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/rentas', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),  // Enviar los datos con los nombres corregidos
+        body: JSON.stringify(formData),  // Enviar los datos de la renta
       });
+
       const data = await response.json();
-      console.log('Usuario registrado:', data);
+      console.log('Renta registrada:', data);
 
       if (response.ok) {
-        setUsers([...users, {
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
-          birthDate: formData.birthDate
+        setRentals([...rentals, {
+          rentalDate: formData.rentalDate,
+          customerId: formData.customerId,
+          movieId: formData.movieId,
         }]);
 
-        setShowRegister(false);
+        setShowRentalForm(false);
 
         setFormData({
-          firstName: '',
-          lastName: '',
-          birthDate: '',
-          password: '',
+          rentalDate: '',
+          customerId: '',
+          movieId: '',
         });
       } else {
-        console.error('Error al registrar el usuario:', data.message);
+        console.error('Error al registrar la renta:', data.message);
       }
     } catch (error) {
-      console.error('Error al registrar el usuario:', error);
+      console.error('Error al registrar la renta:', error);
     }
   };
 
-  // Función para obtener los usuarios registrados desde el backend
-  const fetchUsers = async () => {
+  // Función para obtener las rentas registradas desde el backend
+  const fetchRentals = async () => {
     try {
-      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/users');
+      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/rentas');
       const data = await response.json();
 
       console.log('Datos recibidos del backend:', data);
-
-      // Limpiar nombres y manejar el formato de fecha
-      const cleanedUsers = data.map(user => ({
-        firstName: user.first_name.trim(),
-        lastName: user.last_name.trim(),
-        birthDate: new Date(user.birth_date).toLocaleDateString(), // Formatear la fecha
-      }));
-
-      setUsers(cleanedUsers);
-      setShowRegister(false);
+      setRentals(data);
+      setShowRentalForm(false);
     } catch (error) {
-      console.error('Error al obtener usuarios:', error);
+      console.error('Error al obtener las rentas:', error);
     }
   };
 
   return (
     <div className="App">
-      <h1>Aplicación de Registro de nuevos Usuarios</h1>
+      <h1>Aplicación de Registro de Rentas</h1>
       <div>
-        <button onClick={() => setShowRegister(true)}>Registrar Usuario</button>
-        <button onClick={fetchUsers}>Ver Usuarios Registrados</button>
+        <button onClick={() => setShowRentalForm(true)}>Registrar Renta</button>
+        <button onClick={fetchRentals}>Ver Rentas Registradas</button>
       </div>
 
-      {showRegister ? (
+      {showRentalForm ? (
         <div>
-          <h2>Registro de Usuarios</h2>
+          <h2>Registro de Rentas</h2>
           <form onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="first_name">Nombres:</label>
+              <label htmlFor="rental_date">Fecha de Renta:</label>
               <input
-                id="first_name"
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="last_name">Apellidos:</label>
-              <input
-                id="last_name"
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="birth_date">Fecha de nacimiento:</label>
-              <input
-                id="birth_date"
+                id="rental_date"
                 type="date"
-                name="birthDate"
-                value={formData.birthDate}
+                name="rentalDate"
+                value={formData.rentalDate}
                 onChange={handleChange}
                 required
               />
             </div>
             <div>
-              <label htmlFor="password">Password:</label>
+              <label htmlFor="customer_id">Documento del Cliente:</label>
               <input
-                id="password"
-                type="password"
-                name="password"
-                value={formData.password}
+                id="customer_id"
+                type="text"
+                name="customerId"
+                value={formData.customerId}
                 onChange={handleChange}
                 required
               />
             </div>
-            <button type="submit">Registrar</button>
+            <div>
+              <label htmlFor="movie_id">Película:</label>
+              <select
+                id="movie_id"
+                name="movieId"
+                value={formData.movieId}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Selecciona una película</option>
+                {movies.map((movie) => (
+                  <option key={movie.movie_id} value={movie.movie_id}>
+                    {movie.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <button type="submit">Registrar Renta</button>
           </form>
         </div>
       ) : (
         <div>
-          <h2>Usuarios Registrados</h2>
-          {users.length === 0 ? (
-            <p>No hay usuarios registrados aún.</p>
+          <h2>Rentas Registradas</h2>
+          {rentals.length === 0 ? (
+            <p>No hay rentas registradas aún.</p>
           ) : (
             <ul>
-              {users.map((user, index) => (
+              {rentals.map((rental, index) => (
                 <li key={index}>
-                  {user.firstName} {user.lastName}, 
-                  Nacimiento: {user.birthDate}
+                  Fecha de Renta: {rental.rentalDate}, Cliente: {rental.customerId}, Película: {rental.movieId}
                 </li>
               ))}
             </ul>
