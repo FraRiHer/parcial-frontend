@@ -28,7 +28,7 @@ function App() {
       const data = await response.json();
       console.log(data); // Depurar la respuesta de la API
       if (data.data) {
-        setMovies(data.data); // Asegurarse de que la clave 'data' esté presente
+        setMovies(data.data);
       } else {
         console.error('Error al obtener las películas:', data.message);
       }
@@ -43,7 +43,7 @@ function App() {
 
   // Verificar el estado de movies
   useEffect(() => {
-    console.log(movies); // Depurar el estado de movies
+    console.log(movies);
   }, [movies]);
 
   // Manejo del envío del formulario de rentas
@@ -97,10 +97,16 @@ function App() {
     }
 
     try {
-      const response = await fetch('http://ec2-52-20-174-31.compute-1.amazonaws.com:5000/get-movies/' + formData.customerId);
+      const response = await fetch(`http://ec2-52-20-174-31.compute-1.amazonaws.com:5000/get-movies/${formData.customerId}`);
       const data = await response.json();
       if (data.status === "success") {
-        setRentals(data.data);
+        const rentalsData = data.data.map(rental => ({
+          rentalDate: rental.rental_date,
+          customerId: rental.customer_id,
+          filmId: rental.film_id,
+          title: rental.title,
+        }));
+        setRentals(rentalsData);
         setShowRentalForm(false);
       } else {
         console.error('Error al obtener las rentas:', data.message);
@@ -173,7 +179,7 @@ function App() {
             <ul>
               {rentals.map((rental, index) => (
                 <li key={index}>
-                  Fecha de Renta: {rental.rentalDate}, Cliente: {rental.customerId}, Película: {rental.filmId}
+                  Fecha de Renta: {rental.rentalDate}, Cliente: {rental.customerId}, Película: {rental.title}
                 </li>
               ))}
             </ul>
