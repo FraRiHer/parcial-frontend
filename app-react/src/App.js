@@ -24,7 +24,7 @@ function App() {
   // Obtener las películas del backend
   const fetchMovies = async () => {
     try {
-      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/movies');
+      const response = await fetch('http://ec2-52-20-174-31.compute-1.amazonaws.com:5000/movies');
       const data = await response.json();
       if (data.status === "success") {
         setMovies(data.data);
@@ -50,7 +50,7 @@ function App() {
     }
 
     try {
-      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/add-rental', {
+      const response = await fetch('http://ec2-52-20-174-31.compute-1.amazonaws.com:5000/add-rental', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ function App() {
   // Función para obtener las rentas registradas desde el backend
   const fetchRentals = async () => {
     try {
-      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/get-movies/' + formData.customerId);
+      const response = await fetch('http://ec2-52-20-174-31.compute-1.amazonaws.com:5000/get-movies/' + formData.customerId);
       const data = await response.json();
       if (data.status === "success") {
         setRentals(data.data);
