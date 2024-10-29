@@ -2,20 +2,14 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
-  // Estado para los campos del formulario de rentas
   const [formData, setFormData] = useState({
     rentalDate: '',
     customerId: '',
-    movieId: '',
+    filmId: '',
   });
 
-  // Estado para almacenar las películas desde el backend
   const [movies, setMovies] = useState([]);
-
-  // Estado para manejar las rentas registradas
   const [rentals, setRentals] = useState([]);
-
-  // Estado para manejar cuál pantalla mostrar (true: formulario de rentas, false: lista de rentas)
   const [showRentalForm, setShowRentalForm] = useState(true);
 
   // Manejo de cambios en los inputs
@@ -27,18 +21,21 @@ function App() {
     });
   };
 
-  // Obtener las películas del backend para mostrar en el desplegable
+  // Obtener las películas del backend
   const fetchMovies = async () => {
     try {
       const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/movies');
       const data = await response.json();
-      setMovies(data);
+      if (data.status === "success") {
+        setMovies(data.data);
+      } else {
+        console.error('Error al obtener las películas:', data.message);
+      }
     } catch (error) {
       console.error('Error al obtener las películas:', error);
     }
   };
 
-  // Cargar las películas cuando se monta el componente
   useEffect(() => {
     fetchMovies();
   }, []);
@@ -47,37 +44,36 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validación para asegurarnos de que todos los campos estén llenos
-    if (!formData.rentalDate || !formData.customerId || !formData.movieId) {
+    if (!formData.rentalDate || !formData.customerId || !formData.filmId) {
       console.error('Todos los campos son requeridos');
       return;
     }
 
     try {
-      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/rentas', {
+      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/add-rental', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),  // Enviar los datos de la renta
+        body: JSON.stringify({
+          rental_date: formData.rentalDate,
+          customer_id: formData.customerId,
+          film_id: formData.filmId,
+        }),
       });
 
       const data = await response.json();
-      console.log('Renta registrada:', data);
-
-      if (response.ok) {
+      if (data.status === "success") {
         setRentals([...rentals, {
           rentalDate: formData.rentalDate,
           customerId: formData.customerId,
-          movieId: formData.movieId,
+          filmId: formData.filmId,
         }]);
-
         setShowRentalForm(false);
-
         setFormData({
           rentalDate: '',
           customerId: '',
-          movieId: '',
+          filmId: '',
         });
       } else {
         console.error('Error al registrar la renta:', data.message);
@@ -90,12 +86,14 @@ function App() {
   // Función para obtener las rentas registradas desde el backend
   const fetchRentals = async () => {
     try {
-      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/rentas');
+      const response = await fetch('http://ec2-52-2-70-59.compute-1.amazonaws.com:5000/get-movies/' + formData.customerId);
       const data = await response.json();
-
-      console.log('Datos recibidos del backend:', data);
-      setRentals(data);
-      setShowRentalForm(false);
+      if (data.status === "success") {
+        setRentals(data.data);
+        setShowRentalForm(false);
+      } else {
+        console.error('Error al obtener las rentas:', data.message);
+      }
     } catch (error) {
       console.error('Error al obtener las rentas:', error);
     }
@@ -136,17 +134,17 @@ function App() {
               />
             </div>
             <div>
-              <label htmlFor="movie_id">Película:</label>
+              <label htmlFor="film_id">Película:</label>
               <select
-                id="movie_id"
-                name="movieId"
-                value={formData.movieId}
+                id="film_id"
+                name="filmId"
+                value={formData.filmId}
                 onChange={handleChange}
                 required
               >
                 <option value="">Selecciona una película</option>
                 {movies.map((movie) => (
-                  <option key={movie.movie_id} value={movie.movie_id}>
+                  <option key={movie.film_id} value={movie.film_id}>
                     {movie.title}
                   </option>
                 ))}
@@ -164,7 +162,7 @@ function App() {
             <ul>
               {rentals.map((rental, index) => (
                 <li key={index}>
-                  Fecha de Renta: {rental.rentalDate}, Cliente: {rental.customerId}, Película: {rental.movieId}
+                  Fecha de Renta: {rental.rental_date}, Cliente: {rental.customer_id}, Película: {rental.title}
                 </li>
               ))}
             </ul>
